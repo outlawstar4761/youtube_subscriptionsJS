@@ -37,6 +37,15 @@ var googleModule = (function(){
             });
         });
     }
+    function _getSubscriptions(auth,pageToken){
+      return new Promise((resolve,reject)=>{
+        const tube = google.youtube(AUTHVER);
+        tube.subscriptions.list({auth:auth,part:'snippet,contentDetails',mine:true,pageToken:pageToken},(err,response)=>{
+          if(err) reject(err);
+          resolve(response.data);
+        });
+      });
+    }
     return {
         CRED_PATH:CRED_PATH,
         authorize:function(credentials,callback){
@@ -45,44 +54,40 @@ var googleModule = (function(){
         getSecret:function(){
           return JSON.parse(fs.readFileSync(this.CRED_PATH));
         },
-        getFileList:function(auth,options){
-            return new Promise((resolve,reject)=>{
-                var fileList = [];
-                const drive = google.drive({version:AUTHVER,auth});
-                drive.files.list(options,(err,res)=>{
-                    if(err){
-                      reject(err);
-                      return;
-                    }
-                    const files = res.data.files;
-                    files.forEach((file)=>{fileList.push(file);});
-                    resolve(fileList);
-                });
+        getSubscriptions: async function(auth,pageToken,channels){
+          let data = await _getSubscriptions(auth,pageToken);
+          channels = channels.concat(data.items);
+          if(!data.nextPageToken){
+            return channels;
+          }
+          return await this.getSubscriptions(auth,data.nextPageToken,channels);
+        },
+        getChannel:function(auth,channelId){
+          return new Promise((resolve,reject)=>{
+            const tube = google.youtube(AUTHVER);
+            tube.channels.list({auth:auth,part:"snippet,contentDetails,statistics",id:channelId},(err,response)=>{
+              if (err) reject(err);
+              resolve(response.data);
             });
+          });
         },
-        deleteFile:async function(auth,fileId){
-            const drive = google.drive({version:AUTHVER,auth});
-            const res = await drive.files.delete({fileId:fileId}).catch((err)=>{throw err; return});
-            return res;
-        },
-        uploadFile:async function(auth,filePath,fileMetaData){
-            const drive = google.drive({version:AUTHVER,auth});
-            var ext = path.extname(filePath);
-            var media = {mimeType:mime.lookup(ext),body:fs.createReadStream(filePath)}
-            const res = await drive.files.create({resource:fileMetaData,media:media});
-        },
-        downloadFile:function(auth,fileId,outPath){
-            return new Promise((resolve,reject)=>{
-              let dest = fs.createWriteStream(outPath);
-              const drive = google.drive({version:AUTHVER,auth});
-              drive.files.get({fileId:fileId,alt:'media'},{responseType:'stream'},(err,res)=>{
-                res.data.on('end',()=>{}).on('err',(err)=>{
-                  reject(err);
-                }).pipe(dest).on('finish',()=>{
-                  resolve();
-                });
-              });
+        getChannelActivity:function(auth,channelId){
+          return new Promise((resolve,reject)=>{
+            const tube = google.youtube(AUTHVER);
+            tube.activities.list({auth:auth,part:"snippet,contentDetails",channelId:channelId},(err,response)=>{
+              if (err) reject(err);
+              resolve(response.data);
             });
+          });
+        },
+        getVideo:function(auth,videoId){
+          return new Promise((resolve,reject)=>{
+            const tube = google.youtube(AUTHVER);
+            tube.videos.list({auth:auth,part:['snippet'],id:videoId},(err,response)=>{
+              if (err) reject(err);
+              resolve(response.data);
+            });
+          });
         }
     }
 }());
