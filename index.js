@@ -22,7 +22,11 @@ const fs = require('fs');
           let path = config.outputDir + channel.name + '/';
           if(!fs.existsSync(path)){
             console.log(path + id);
-            youtube.download(path,id);
+            try{
+              youtube.download(path,id);
+            }catch(err){
+              console.error(err);
+            }
           }
         }
       });
