@@ -1,3 +1,9 @@
+/*
+// TODO:
+parse stderr and ignore WARNING
+Right now you're throwing an error almost every time
+*/
+
 var youtubeModule = (function(){
   const {exec} = require('child_process');
   const YOUTUBEBASE = 'https://www.youtube.com/watch?v=';
@@ -11,7 +17,7 @@ var youtubeModule = (function(){
     return new Promise((resolve,reject)=>{
       exec(cmd,(err,stdout,stderr)=>{
         if(err) reject(err);
-        if(stderr) reject(stderr);
+        if(stderr && !stderr.match('WARNING')) reject(stderr);
         resolve(stdout);
       });
     });

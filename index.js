@@ -16,17 +16,17 @@ const fs = require('fs');
     });
     for(let i = 0; i < channels.length;i++){
       let activity = await google.getChannelActivity(auth,channels[i].id);
+      console.log('Checking activity for: ' + channels[i].name);
       for(let j = 0; j < activity.items.length;j++){
         if(activity.items[j].contentDetails['upload']){
           let id = activity.items[j].contentDetails.upload.videoId;
-          let path = config.outputDir + channels[i].name + '/';
+          let path = config.outputDir + channels[i].name + '/' + id + '/';
           if(!fs.existsSync(path)){
             try{
               await youtube.download(path,id);
               console.log(path + id);
             }catch(err){
               console.error(err);
-              continue;
             }
           }
         }
