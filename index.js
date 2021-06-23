@@ -23,7 +23,7 @@ const fs = require('fs');
           if(!fs.existsSync(path)){
             console.log(path + id);
             try{
-              youtube.download(path,id);
+              await youtube.download(path,id);
             }catch(err){
               console.error(err);
             }
