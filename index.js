@@ -1,23 +1,32 @@
 const google = require('./src/googleModule');
 const youtube = require('./src/youTubeDlModule');
+const config = require('./config/config');
+const fs = require('fs');
 
 (async ()=>{
-  // let secret = google.getSecret();
-  // google.authorize(secret,async (auth)=>{
-  //   let subs = await google.getSubscriptions(auth,null,[]);
-  //   let channelIds = subs.map((sub)=>{return sub.snippet.resourceId.channelId});
-  //   channelIds.forEach(async (id)=>{
-  //     let activity = await google.getChannelActivity(auth,id);
-  //     console.log(activity.items[0].contentDetails);
-  //   });
-  // });
-  try{
-    let output = await youtube.download("7E-cwdnsiow");
-    console.log(output);
-  }catch(err){
-    console.log(err);
-  }
+
+  let secret = google.getSecret();
+  google.authorize(secret,async (auth)=>{
+    let subs = await google.getSubscriptions(auth,null,[]);
+    let channels = subs.map((sub)=>{
+      return {
+        id:sub.snippet.resourceId.channelId,
+        name:youtube.cleanPath(sub.snippet.title).replaceAll(' ','.')
+      }
+    });
+    channels.forEach(async (channel)=>{
+      let activity = await google.getChannelActivity(auth,channel.id);
+      activity.items.forEach((item)=>{
+        if(item.contentDetails['upload']){
+          let id = item.contentDetails.upload.videoId;
+          let path = config.outputDir + channel.name + '/';
+          if(!fs.existsSync(path)){
+            console.log(path + id);
+            youtube.download(path,id);
+          }
+        }
+      });
+    });
+  });
 
 })();
-
-// channel.pageInfo.resultsPage

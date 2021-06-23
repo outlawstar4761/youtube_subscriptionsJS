@@ -2,6 +2,10 @@ var youtubeModule = (function(){
   const {exec} = require('child_process');
   const YOUTUBEBASE = 'https://www.youtube.com/watch?v=';
   const CMDBASE = 'youtube-dl --write-description --write-info-json --write-annotations --write-sub --write-thumbnail';
+  const NONASCIIPATT = /[^\x00-\x7F]/g;
+  const BADFILEPATT = /[\:"*?<>|]/g;
+  const PUNCTPATT = /['!~`*^%$#@+,]/g;
+  const TRIDOT = /[\.]{3}/g;
 
   function _execShellCmd(cmd){
     return new Promise((resolve,reject)=>{
@@ -18,14 +22,20 @@ var youtubeModule = (function(){
   function _buildCmd(outpath,uri){
     return CMDBASE + ' -o ' + outpath + ' ' + uri;
   }
+  function _buildCleanPath(absolutePath){
+    return absolutePath.replaceAll(NONASCIIPATT,'').replaceAll(BADFILEPATT,'').replaceAll(PUNCTPATT,'').replaceAll(TRIDOT,'');
+  }
   return {
+    cleanPath:function(absolutePath){
+      return _buildCleanPath(absolutePath);
+    },
     downloadFromList:async function(path){
       //verify path
       //build command
       //await execution
     },
-    download:async function(videoId){
-      let cmd = _buildCmd("./out/" + videoId,_buildYoutubeUri(videoId));
+    download:async function(destPath,videoId){
+      let cmd = _buildCmd(destPath + videoId,_buildYoutubeUri(videoId));
       let stdout = '';
       try{
         stdout = await _execShellCmd(cmd);
