@@ -11,7 +11,12 @@ const youtube = require('./src/youTubeDlModule');
   //     console.log(activity.items[0].contentDetails);
   //   });
   // });
-  let output = await youtube.download("7E-cwdnsiow");
+  try{
+    let output = await youtube.download("7E-cwdnsiow");
+    console.log(output);
+  }catch(err){
+    console.log(err);
+  }
 
 })();
 
