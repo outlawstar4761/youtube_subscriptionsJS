@@ -26,28 +26,12 @@ const fs = require('fs');
               console.log(path + id);
             }catch(err){
               console.error(err);
+              continue;
             }
           }
         }
       }
     }
-    // channels.forEach(async (channel)=>{
-    //   let activity = await google.getChannelActivity(auth,channel.id);
-    //   activity.items.forEach((item)=>{
-    //     if(item.contentDetails['upload']){
-    //       let id = item.contentDetails.upload.videoId;
-    //       let path = config.outputDir + channel.name + '/';
-    //       if(!fs.existsSync(path)){
-    //         console.log(path + id);
-    //         try{
-    //           await youtube.download(path,id);
-    //         }catch(err){
-    //           console.error(err);
-    //         }
-    //       }
-    //     }
-    //   });
-    // });
   });
 
 })();
