@@ -4,7 +4,7 @@ var youtubeModule = (function(){
   const CMDBASE = 'youtube-dl --write-description --write-info-json --write-annotations --write-sub --write-thumbnail';
 
   function _execShellCmd(cmd){
-    return new Promise((resolv,reject)=>{
+    return new Promise((resolve,reject)=>{
       exec(cmd,(err,stdout,stderr)=>{
         if(err) reject(err);
         if(stderr) reject(stderr);
