@@ -25,7 +25,7 @@ var youtubeModule = (function(){
       //await execution
     },
     download:async function(videoId){
-      let cmd = _buildCmd("./out/",_buildYoutubeUri(videoId));
+      let cmd = _buildCmd("./out/" + videoId,_buildYoutubeUri(videoId));
       let stdout = '';
       try{
         stdout = await _execShellCmd(cmd);
