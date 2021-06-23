@@ -14,23 +14,40 @@ const fs = require('fs');
         name:youtube.cleanPath(sub.snippet.title).replaceAll(' ','.')
       }
     });
-    channels.forEach(async (channel)=>{
-      let activity = await google.getChannelActivity(auth,channel.id);
-      activity.items.forEach((item)=>{
-        if(item.contentDetails['upload']){
-          let id = item.contentDetails.upload.videoId;
-          let path = config.outputDir + channel.name + '/';
+    for(let i = 0; i < channels.length;i++){
+      let activity = await google.getChannelActivity(auth,channels[i].id);
+      for(let j = 0; j < activity.items.length;j++){
+        if(activity.items[j].contentDetails['upload']){
+          let id = activity.items[j].contentDetails.upload.videoId;
+          let path = config.outputDir + channels[i].name + '/';
           if(!fs.existsSync(path)){
-            console.log(path + id);
             try{
               await youtube.download(path,id);
+              console.log(path + id);
             }catch(err){
               console.error(err);
             }
           }
         }
-      });
-    });
+      }
+    }
+    // channels.forEach(async (channel)=>{
+    //   let activity = await google.getChannelActivity(auth,channel.id);
+    //   activity.items.forEach((item)=>{
+    //     if(item.contentDetails['upload']){
+    //       let id = item.contentDetails.upload.videoId;
+    //       let path = config.outputDir + channel.name + '/';
+    //       if(!fs.existsSync(path)){
+    //         console.log(path + id);
+    //         try{
+    //           await youtube.download(path,id);
+    //         }catch(err){
+    //           console.error(err);
+    //         }
+    //       }
+    //     }
+    //   });
+    // });
   });
 
 })();
