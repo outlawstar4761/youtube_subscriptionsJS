@@ -16,7 +16,8 @@ let channelId = 'UCnQC_G5Xsjhp9fEJKuIcrSw';
     let channelName = youtube.cleanPath(channel.items[0].snippet.title).replaceAll(' ','.')
     let backlog = await google.getPlayListItems(auth,playlistId,null,[]);
     for(let i = 0; i < backlog.length; i++){
-      let path = config.outputDir + channelName + '/' + backlog[i].contentDetails.videoId + '/';
+      let id = backlog[i].contentDetails.videoId;
+      let path = config.outputDir + channelName + '/' + id + '/';
       if(!fs.existsSync(path)){
         try{
           await youtube.download(path,id);
