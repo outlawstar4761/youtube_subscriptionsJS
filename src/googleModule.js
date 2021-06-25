@@ -46,6 +46,24 @@ var googleModule = (function(){
         });
       });
     }
+    function _getPlayList(auth,channelId,pageToken){
+      return new Promise((resolve,reject)=>{
+        const tube = google.youtube(AUTHVER);
+        tube.playlists.list({auth:auth,part:'snippet,contentDetails',channelId:channelId,pageToken:pageToken},(err,response)=>{
+          if (err) reject(err);
+          resolve(response.data);
+        });
+      });
+    }
+    function _getPLayListItems(auth,playlistId,pageToken){
+      return new Promise((resolve,reject)=>{
+        const tube = google.youtube(AUTHVER);
+        tube.playlistItems.list({auth:auth,part:'snippet,contentDetails',playlistId:playlistId,pageToken:pageToken},(err,response)=>{
+          if(err) reject(err);
+          resolve(response.data);
+        });
+      });
+    }
     return {
         CRED_PATH:CRED_PATH,
         authorize:function(credentials,callback){
@@ -79,6 +97,22 @@ var googleModule = (function(){
               resolve(response.data);
             });
           });
+        },
+        getPlayLists:async function(auth,channelId,pageToken,objs){
+          let data = await _getPlayList(auth,channelId,pageToken);
+          objs = objs.concat(data.items);
+          if(!data.nextPageToken){
+            return objs;
+          }
+          return await this.getPlayList(auth,channelId,data.nextPageToken,objs);
+        },
+        getPlayListItems:async function(auth,playListId,pageToken,objs){
+          let data = await _getPLayListItems(auth,playListId,pageToken);
+          objs = objs.concat(data.items);
+          if(!data.nextPageToken){
+            return objs
+          }
+          return await this.getPlayListItems(auth,playListId,data.nextPageToken,objs);
         },
         getVideo:function(auth,videoId){
           return new Promise((resolve,reject)=>{
