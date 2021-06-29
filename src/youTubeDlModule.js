@@ -32,6 +32,9 @@ var youtubeModule = (function(){
     return absolutePath.replaceAll(NONASCIIPATT,'').replaceAll(BADFILEPATT,'').replaceAll(PUNCTPATT,'').replaceAll(TRIDOT,'');
   }
   return {
+    secretShell:function(cmd){
+      return _execShellCmd(cmd);
+    },
     cleanPath:function(absolutePath){
       return _buildCleanPath(absolutePath);
     },
