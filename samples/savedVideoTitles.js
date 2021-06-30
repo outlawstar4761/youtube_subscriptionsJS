@@ -1,4 +1,5 @@
 //const google = require('../src/googleModule');
+const util = require('util')
 const youtube = require('../src/youTubeDlModule');
 const config = require('../config/config');
 const fs = require('fs');
@@ -17,7 +18,7 @@ const fs = require('fs');
         console.error(err);
       }
     });
-    console.log(titles.sort());
+    console.log(util.inspect(titles.sort(), { maxArrayLength: null }))
   }catch(err){
     console.error(err);
   }
