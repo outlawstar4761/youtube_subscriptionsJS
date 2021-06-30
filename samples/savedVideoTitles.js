@@ -4,6 +4,7 @@ const config = require('../config/config');
 const fs = require('fs');
 
 (async ()=>{
+  let titles = [];
   let cmd = 'find ' + config.outputDir + " -name '*.info.json'";
   try{
     let paths = await youtube.secretShell(cmd);
@@ -11,11 +12,12 @@ const fs = require('fs');
       // console.log(p);
       try{
         let data = JSON.parse(fs.readFileSync(p));
-        console.log(data.fulltitle);
+        titles.push(data.fulltitle);
       }catch(err){
         console.error(err);
       }
     });
+    console.log(titles.sort());
   }catch(err){
     console.error(err);
   }
