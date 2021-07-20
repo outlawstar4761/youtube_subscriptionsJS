@@ -7,6 +7,7 @@ const fs = require('fs');
 no longers exposes WatchLater || WatchHistory playlists
 **SOLUTION** Create a new playlist called "capture".
 Add anything you want saved to this playlist.
+This script assumes that "capture" is your only custom playlist
 */
 
 (async ()=>{
