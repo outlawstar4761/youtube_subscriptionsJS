@@ -17,7 +17,7 @@ Add anything you want saved to this playlist.
     let res = await google.getMyPlayLists(auth).catch(console.error);
     let backlog = await google.getPlayListItems(auth,res.items[0].id,null,[]).catch(console.error);
     for(let i = 0; i < backlog.length; i++){
-      let channelName = youtube.cleanPath(backlog[i].snippet.videoOwnerTitle).replaceAll(' ','.')
+      let channelName = youtube.cleanPath(backlog[i].snippet.videoOwnerChannelTitle).replaceAll(' ','.')
       let id = backlog[i].contentDetails.videoId;
       let path = config.outputDir + channelName + '/' + id + '/';
       if(!fs.existsSync(path)){
@@ -29,7 +29,7 @@ Add anything you want saved to this playlist.
         }
       }
     }
-    console.log(backlog);
+    // console.log(backlog);
   });
 
 })();
