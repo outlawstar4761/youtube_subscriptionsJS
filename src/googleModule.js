@@ -55,6 +55,15 @@ var googleModule = (function(){
         });
       });
     }
+    function _getMyPlayLists(auth){
+      return new Promise((resolve,reject)=>{
+        const tube = google.youtube(AUTHVER);
+        tube.playlists.list({auth:auth,part:'snippet,contentDetails',mine:true},(err,response)=>{
+          if(err) reject(err);
+          resolve(response.data);
+        });
+      });
+    }
     function _getPLayListItems(auth,playlistId,pageToken){
       return new Promise((resolve,reject)=>{
         const tube = google.youtube(AUTHVER);
@@ -122,6 +131,18 @@ var googleModule = (function(){
               resolve(response.data);
             });
           });
+        },
+        getMyChannels:function(auth){
+          return new Promise((resolve,reject)=>{
+            const tube = google.youtube(AUTHVER);
+            tube.channels.list({auth:auth,part:'snippet,contentDetails,statistics',mine:true},(err,response)=>{
+              if (err) reject(err);
+              resolve(response.data);
+            });
+          });
+        },
+        getMyPlayLists:function(auth){
+          return _getMyPlayLists(auth);
         }
     }
 }());
